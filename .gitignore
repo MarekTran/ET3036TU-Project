@@ -9,3 +9,5 @@ test_simulink/slprj/accel/test/test_SolverChangeInfo.mat
 test_simulink/slprj/accel/test/test_instrumentation_settings.mat
 test_simulink/slprj/accel/test/rtwgen_tlc/s42_b0_h910q_ModuleConstants.tlc
 test_simulink/slprj/accel/test/amsi_serial.mat
+
+*.autosave
