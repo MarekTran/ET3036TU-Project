@@ -1,12 +1,11 @@
-
 # Simulink
-slprj/
 *_ert_rtw/
 *_slrt_rtw/
 *.slxc
 *.mdl~
 *.autosave
-*.sdi
+
+**/*.mat
 
 # Generated Code
 *_codegen/
