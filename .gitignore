@@ -1,0 +1,20 @@
+
+# Simulink
+slprj/
+*_ert_rtw/
+*_slrt_rtw/
+*.slxc
+*.mdl~
+*.autosave
+*.sdi
+
+# Generated Code
+*_codegen/
+
+# MATLAB User Preferences
+matlabprefs.mat
+history.m
+
+# Others
+.DS_Store # For macOS
+Thumbs.db # For Windows
