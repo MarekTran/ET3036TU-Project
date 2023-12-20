@@ -6,6 +6,7 @@
 
 # Simulink
 slprj/
+*.mat
 *_ert_rtw/
 *_slrt_rtw/
 *.slxc
