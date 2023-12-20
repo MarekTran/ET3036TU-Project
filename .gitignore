@@ -4,7 +4,7 @@
 *.slxc
 *.mdl~
 *.autosave
-
+**/*.l
 **/*.mat
 
 # Generated Code
