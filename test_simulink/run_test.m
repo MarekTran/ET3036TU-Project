@@ -6,12 +6,12 @@ clc
 clear var
 close all
 simulation_mode =2;  % Select 1: Discrete, Select 2: Phasor
-Tsample = 0.001;  % Sampling time for simulation. Should be the same for the value enetered in the Power GUI block during discrete mode
+Tsample = 60;  % Sampling time for simulation. Should be the same for the value enetered in the Power GUI block during discrete mode
 Fnom = 50; % Grid frequency
 Vnom = sqrt(3)*230;      % Nominal grid voltage meassued line - to - line (R.m.s)
 T_err = 60*60; % Time period to reset error accumulator in seconds
 E_tol = 100;  %Error tollerance value in Wh
-OverChargingProtection = 1; %Must be 1 when running the final stage this is for battery
+OverChargingProtection = 0; %Must be 1 when running the final stage this is for battery
 
 % Example script to prepare data for simulation run
 

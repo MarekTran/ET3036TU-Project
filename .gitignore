@@ -1,11 +1,26 @@
-test_simulink/slprj/*
-test_simulink/slprj/sl_proj.tmw
-test_simulink/slprj/sim/varcache/test/varInfo.mat
-test_simulink/slprj/sim/varcache/test/tmwinternal/simulink_cache.xml
-test_simulink/slprj/sim/varcache/test/checksumOfCache.mat
-test_simulink/slprj/accel/test/tmwinternal/simulink_cache.xml
-test_simulink/slprj/accel/test/test_top_vm.bc
-test_simulink/slprj/accel/test/test_SolverChangeInfo.mat
-test_simulink/slprj/accel/test/test_instrumentation_settings.mat
-test_simulink/slprj/accel/test/rtwgen_tlc/s42_b0_h910q_ModuleConstants.tlc
-test_simulink/slprj/accel/test/amsi_serial.mat
+# MATLAB
+*.mex*
+*.mat
+*.asv
+*.m~
+
+# Simulink
+slprj/
+*_ert_rtw/
+*_slrt_rtw/
+*.slxc
+*.mdl~
+*.slx~
+*.autosave
+*.sdi
+
+# Generated Code
+*_codegen/
+
+# MATLAB User Preferences
+matlabprefs.mat
+history.m
+
+# Others
+.DS_Store # For macOS
+Thumbs.db # For Windows
