@@ -17,3 +17,5 @@ history.m
 # Others
 .DS_Store # For macOS
 Thumbs.db # For Windows
+
+*.pyc
