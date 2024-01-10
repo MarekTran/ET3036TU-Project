@@ -222,6 +222,15 @@ class WindFarm:
     def __init__(self, turbines):
         self.turbines = turbines
 
+    def get_total_price(self) -> int:
+        """
+        Returns the total price of the wind farm in EUR.
+        """
+        total_price = 0
+        for turbine in self.turbines:
+            total_price += turbine.price
+        return total_price
+
     def get_power_output_simple(self, wind_speeds):
         """
         Calculate the total power output profile of the wind farm using a simple cubic formula.
@@ -380,10 +389,18 @@ class MicroGrid:
     A class with the purpose of simulating a microgrid.
     """
 
-    def __init__(self, windfarm, solarfarm, storage_capacity_kwh) -> None:
+    def __init__(self, windfarm: WindFarm, solarfarm: SolarFarm, storage_capacity_kwh, storage_efficiency, storage_price_per_kw) -> None:
         self.windfarm = windfarm
         self.solarfarm = solarfarm
         self.storage_capacity_kwh = storage_capacity_kwh
+        self.storage_efficiency = storage_efficiency
+        self.storage_price_per_kw = storage_price_per_kw 
+
+    def get_total_price(self) -> int:
+        wind_price = self.windfarm.get_total_price()
+        solar_price = self.solarfarm.pricepersqm * self.solarfarm.area
+        storage_price = self.storage_price_per_kw * self.storage_capacity_kwh
+        return wind_price + solar_price + storage_price
 
     def get_power_output(self, df_weather):
         """
@@ -449,8 +466,8 @@ class MicroGrid:
         Returns:
         np.array: An array containing the new net power after considering the battery storage.
         """
-
-        battery_state = 0  # Initial state of charge of the battery
+        # self.storage_efficiency is 0.8 by default
+        battery_state = self.storage_capacity_kwh * 0.5  # Initial state of charge of the battery
         new_net_power = []
 
         for index, row in df.iterrows():
@@ -463,10 +480,69 @@ class MicroGrid:
                 new_net_power.append(net_energy - energy_to_charge)
 
             elif net_energy < 0:  # Energy deficit
-                energy_to_discharge = min(-net_energy, battery_state)
+                energy_to_discharge = min(-net_energy * 1/self.storage_efficiency, battery_state)
                 battery_state -= energy_to_discharge
-                adjusted_net_energy = net_energy + energy_to_discharge
+                adjusted_net_energy = net_energy + energy_to_discharge * self.storage_efficiency
                 new_net_power.append(
                     adjusted_net_energy if adjusted_net_energy < 0 else 0)
 
         return np.array(new_net_power)
+
+class DieselGenerator:
+    """
+    A class that will simulate a diesel generator.
+    properties:
+    diesel_price (float): price of diesel in EUR per liter
+    efficiency (float): efficiency of the diesel generator
+    fuel_consumption (float): liter fuel per kwh
+    price_per_rated_kw (float): price of the diesel generator in EUR per rated kW
+    """
+
+    def __init__(self, diesel_price, fuel_consumption, price_per_rated_kw) -> None:
+        self.diesel_price = diesel_price
+        self.fuel_consumption = fuel_consumption
+        self.price_per_rated_kw = price_per_rated_kw
+
+    def get_generator_specs(self, net_power: np.array):
+        """
+        Calculate the specs of the diesel generator.
+        Parameters:
+        df_net_power (pandas.DataFrame): A DataFrame of net power output in kW.
+        Returns:
+        float: The running cost in EUR.
+        """
+        # Required rated power is the absolute value of minimum net power
+        required_rated_power = abs(net_power.min())
+        return required_rated_power
+
+    def get_running_cost(self, net_power: np.array):
+        """
+        Calculate the running cost of the diesel generator.
+        Parameters:
+        df_net_power (pandas.DataFrame): A DataFrame of net power output in kW.
+        Returns:
+        float: The running cost in EUR.
+        """
+        # Calculate the sum of the net power output where elements are < 0
+        total_kwh_to_generate = abs(net_power[net_power < 0].sum())
+        # Calculate the total liters of diesel required
+        total_liters = total_kwh_to_generate * self.fuel_consumption
+        # Calculate the running cost
+        running_cost = total_liters * self.diesel_price
+        return running_cost
+
+    def get_total_price(self, net_power: np.array):
+        """
+        Calculate the total price of the diesel generator.
+        Parameters:
+        df_net_power (pandas.DataFrame): A DataFrame of net power output in kW.
+        Returns:
+        float: The total price in EUR.
+        """
+        # Calculate the required rated power
+        required_rated_power = self.get_generator_specs(net_power)
+        # Calculate the running cost
+        running_cost = self.get_running_cost(net_power)
+        # Calculate the total price
+        total_price = required_rated_power * self.price_per_rated_kw + running_cost
+        return total_price
