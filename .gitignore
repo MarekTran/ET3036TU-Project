@@ -19,3 +19,5 @@ history.m
 Thumbs.db # For Windows
 
 *.pyc
+
+custom_py_modules/__pycache__/
