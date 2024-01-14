@@ -240,7 +240,7 @@ class WindFarm:
         numpy.array: An array of power outputs in kilowatts [kW].
         """
         # wind_speeds is a DataFrame, convert to numpy array
-        if type(wind_speeds) == pd.core.frame.DataFrame:
+        if isinstance(wind_speeds, pd.core.frame.DataFrame):
             wind_speeds = wind_speeds.to_numpy()
         power_output = np.zeros(len(wind_speeds))
         for turbine in self.turbines:
@@ -256,7 +256,7 @@ class WindFarm:
         numpy.array: An array of power outputs in kilowatts [kW].
         """
         # wind_speeds is a DataFrame, convert to numpy array
-        if type(wind_speeds) == pd.core.frame.DataFrame:
+        if isinstance(wind_speeds, pd.core.frame.DataFrame):
             wind_speeds = wind_speeds.to_numpy()
         power_output = np.zeros(len(wind_speeds))
         for turbine in self.turbines:
@@ -394,7 +394,7 @@ class MicroGrid:
         self.solarfarm = solarfarm
         self.storage_capacity_kwh = storage_capacity_kwh
         self.storage_efficiency = storage_efficiency
-        self.storage_price_per_kw = storage_price_per_kw 
+        self.storage_price_per_kw = storage_price_per_kw
 
     def get_total_price(self) -> int:
         wind_price = self.windfarm.get_total_price()
@@ -467,7 +467,8 @@ class MicroGrid:
         np.array: An array containing the new net power after considering the battery storage.
         """
         # self.storage_efficiency is 0.8 by default
-        battery_state = self.storage_capacity_kwh * 0.5  # Initial state of charge of the battery
+        battery_state = self.storage_capacity_kwh * \
+            0.5  # Initial state of charge of the battery
         new_net_power = []
 
         for index, row in df.iterrows():
@@ -480,13 +481,15 @@ class MicroGrid:
                 new_net_power.append(net_energy - energy_to_charge)
 
             elif net_energy < 0:  # Energy deficit
-                energy_to_discharge = min(-net_energy * 1/self.storage_efficiency, battery_state)
+                energy_to_discharge = min(-net_energy *
+                                          1/self.storage_efficiency, battery_state)
                 battery_state -= energy_to_discharge
                 adjusted_net_energy = net_energy + energy_to_discharge * self.storage_efficiency
                 new_net_power.append(
                     adjusted_net_energy if adjusted_net_energy < 0 else 0)
 
         return np.array(new_net_power)
+
 
 class DieselGenerator:
     """
@@ -546,3 +549,17 @@ class DieselGenerator:
         # Calculate the total price
         total_price = required_rated_power * self.price_per_rated_kw + running_cost
         return total_price
+
+    def get_fuel_consumption(self, net_power: np.array):
+        """
+        Calculate the fuel consumption of the diesel generator.
+        Parameters:
+        df_net_power (pandas.DataFrame): A DataFrame of net power output in kW.
+        Returns:
+        float: The fuel consumption in liters.
+        """
+        # Calculate the sum of the net power output where elements are < 0
+        total_kwh_to_generate = abs(net_power[net_power < 0].sum())
+        # Calculate the total liters of diesel required
+        total_liters = total_kwh_to_generate * self.fuel_consumption
+        return total_liters
