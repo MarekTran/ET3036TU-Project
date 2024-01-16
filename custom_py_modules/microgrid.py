@@ -563,3 +563,15 @@ class DieselGenerator:
         # Calculate the total liters of diesel required
         total_liters = total_kwh_to_generate * self.fuel_consumption
         return total_liters
+    
+    def get_kwh_produced(self, net_power: np.array):
+        """
+        Calculate the kWh produced by the diesel generator.
+        Parameters:
+        df_net_power (pandas.DataFrame): A DataFrame of net power output in kW.
+        Returns:
+        float: The kWh produced.
+        """
+        # Calculate the sum of the net power output where elements are < 0
+        total_kwh_to_generate = abs(net_power[net_power < 0].sum())
+        return total_kwh_to_generate
