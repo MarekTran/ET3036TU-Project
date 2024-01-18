@@ -15,8 +15,8 @@ OverChargingProtection = 1; %Must be 1 when running the final stage this is for 
 
 % Example script to prepare data for simulation run
 
-weather_data = readmatrix('E-2013.csv');
-load_data = readmatrix('E-load-2013.csv');
+weather_data = readmatrix('E-2013-2014-2015.csv');
+load_data = readmatrix('E-load-2013-2014-2015.csv');
 
 % load wind speed data (hourly resolution, [m/s])
 Data.wind.speed = weather_data(:,2)';
